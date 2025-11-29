@@ -1,42 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="km">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Teacher Payslip AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Analyst | Universal Scanner v15.2 (Optimized)</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
-
     <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- HTML2PDF Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+    <!-- Custom Config -->
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                        khmer: ['Battambang', 'Inter', 'ui-sans-serif'],
-                        thai: ['Noto Sans Thai', 'sans-serif'],
-                        sig: ['Great Vibes', 'cursive']
+                        sans: ['Inter', 'Battambang', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        khmer: ['Battambang', 'serif'],
                     },
                     colors: {
-                        brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            900: '#0c4a6e',
+                        cyber: {
+                            dark: 'var(--bg-primary)',
+                            panel: 'var(--bg-panel)',
+                            border: 'var(--border-color)',
+                            accent: '#06b6d4',
+                            danger: '#ef4444',
+                            success: '#10b981',
+                            warning: '#f59e0b',
+                            text: 'var(--text-primary)'
+                        }
+                    },
+                    animation: {
+                        'scan': 'scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        scan: {
+                            '0%': {
+                                top: '0%',
+                                opacity: '0',
+                                height: '1px'
+                            },
+                            '10%': {
+                                opacity: '1',
+                                height: '2px'
+                            },
+                            '50%': {
+                                opacity: '0.8',
+                                height: '4px',
+                                boxShadow: '0 0 20px #06b6d4'
+                            },
+                            '100%': {
+                                top: '100%',
+                                opacity: '0',
+                                height: '1px'
+                            },
+                        },
+                        float: {
+                            '0%, 100%': {
+                                transform: 'translateY(0)'
+                            },
+                            '50%': {
+                                transform: 'translateY(-5px)'
+                            },
                         }
                     }
                 }
@@ -45,1302 +79,838 @@
     </script>
 
     <style>
+         :root {
+            --bg-primary: #0a0f1c;
+            --bg-panel: rgba(21, 30, 50, 0.9);
+            --text-primary: #e2e8f0;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --text-primary: #0f172a;
+            --border-color: rgba(6, 182, 212, 0.3);
+        }
+        
+         ::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+         ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+         ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 2px;
+        }
+        
+        .glass-panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            background: #06b6d4;
+            z-index: 10;
+        }
+        
+        .tech-grid {
+            background-image: linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        /* Mobile Fix: Use dvh for dynamic viewport height */
+        
         body {
-            -webkit-font-smoothing: antialiased;
+            overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 100dvh;
         }
-        /* Print Specifics */
         
-        @media print {
-            @page {
-                margin: 0;
-                size: auto;
-            }
+        @media (min-width: 768px) {
             body {
-                background: white;
-                margin: 0;
-                padding: 0;
-            }
-            header,
-            main,
-            #modal-preview,
-            #modal-contact,
-            .mobile-ai-btn {
-                display: none !important;
-            }
-            #print-container {
-                display: block !important;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                min-height: 100vh;
-                margin: 0;
-                padding: 0;
-                background: white;
-                z-index: 99999;
-            }
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-        }
-        
-        .animate-up {
-            animation: fadeUp 0.4s ease-out forwards;
-        }
-        
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+                overflow: hidden;
             }
         }
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-900 transition-colors duration-300 min-h-screen flex flex-col font-sans">
+<body class="bg-cyber-dark text-cyber-text font-sans min-h-screen flex flex-col transition-colors duration-300">
 
-    <!-- Navbar -->
-    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
-            <div class="flex items-center gap-2.5">
-                <div class="bg-brand-600 text-white p-1.5 rounded-lg shadow-lg shadow-brand-500/30">
-                    <i data-lucide="graduation-cap" class="w-5 h-5"></i>
+    <!-- Background -->
+    <div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(var(--border-color) 1px, transparent 1px); background-size: 30px 30px;">
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-20 border-b border-cyber-border bg-cyber-dark/95 backdrop-blur-md sticky top-0">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-cyan-500/10 rounded-lg flex items-center justify-center border border-cyan-500/30">
+                    <i data-lucide="scan-eye" class="text-cyan-400 w-6 h-6"></i>
                 </div>
-                <h1 class="font-bold text-xl tracking-tight text-slate-800 dark:text-white hidden sm:block">GlobalTeacher<span class="text-brand-600">AI</span></h1>
-                <h1 class="font-bold text-lg tracking-tight text-slate-800 dark:text-white sm:hidden">Payslip<span class="text-brand-600">AI</span></h1>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight leading-none">
+                        MASTER<span class="text-cyan-400">SCAN</span>
+                    </h1>
+                    <span class="text-[10px] font-mono text-slate-400 tracking-[0.2em] uppercase">V15.2 PATCHED</span>
+                </div>
             </div>
 
-            <div class="flex items-center gap-2 md:gap-4">
-                <!-- Country Selector -->
-                <div class="relative group min-w-[140px] md:min-w-[200px]">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500 z-10">
-                        <span id="flag-icon" class="text-lg">🇰🇭</span>
-                    </div>
-                    <select id="country-selector" onchange="app.updateCountryIcon()" class="w-full pl-10 pr-8 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-full text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-brand-500 outline-none appearance-none cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition">
-                        <option value="kh">Cambodia (កម្ពុជា)</option>
-                        <option value="us">USA (សហរដ្ឋអាមេរិក)</option>
-                        <option value="uk">UK (អង់គ្លេស)</option>
-                        <option value="au">Australia (អូស្ត្រាលី)</option>
-                        <option value="ca">Canada (កាណាដា)</option>
-                        <option value="nl">Netherlands (ហូឡង់)</option>
-                        <option value="cn">China (ចិន)</option>
-                        <option value="th">Thailand (ថៃ)</option>
-                        <option value="vn">Vietnam (វៀតណាម)</option>
-                        <option value="id">Indonesia (ឥណ្ឌូនេស៊ី)</option>
-                        <option value="in">India (ឥណ្ឌា)</option>
-                        <option value="pk">Pakistan (ប៉ាគីស្ថាន)</option>
-                        <option value="bd">Bangladesh (បង់ក្លាដែស)</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
-                        <i data-lucide="chevron-down" class="w-3 h-3"></i>
-                    </div>
-                </div>
-
-                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden md:block"></div>
-
-                <button onclick="app.aiAutoFill()" class="hidden md:flex items-center gap-2 px-4 py-2 rounded-full bg-brand-50 dark:bg-slate-800 hover:bg-brand-100 dark:hover:bg-slate-700 text-brand-600 dark:text-brand-400 font-bold text-xs transition active:scale-95 border border-brand-200 dark:border-slate-700"
-                    title="Generate Teacher Data">
-                    <i data-lucide="wand-2" class="w-3.5 h-3.5"></i>
-                    <span>AI Fill</span>
+            <div class="flex items-center gap-2">
+                <button onclick="openContact()" class="p-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 transition-all" title="Contact Support">
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>
                 </button>
-
-                <!-- Support Button -->
-                <button onclick="app.openContact()" class="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Contact Support">
-                    <i data-lucide="life-buoy" class="w-5 h-5"></i>
+                <button onclick="resetInput()" class="p-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 transition-all" title="New Scan">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
                 </button>
-
-                <button onclick="app.toggleLang()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-xs font-bold text-slate-600 dark:text-slate-300">
-                    <i data-lucide="globe" class="w-3.5 h-3.5"></i>
-                    <span id="lang-label">EN</span>
+                <button onclick="toggleTheme()" class="p-2 rounded-lg border border-cyber-border hover:bg-cyan-500/10 transition-all">
+                    <i data-lucide="moon" class="w-5 h-5" id="themeIcon"></i>
                 </button>
-                <button onclick="app.toggleTheme()" class="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
-                    <i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i>
+                <button onclick="toggleLang()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-cyber-border hover:bg-cyan-500/10 transition-all text-xs font-bold font-khmer">
+                    <span id="langLabel">KH</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Mobile AI Button -->
-    <div class="md:hidden px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex gap-3 justify-center mobile-ai-btn">
-        <button onclick="app.aiAutoFill()" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-600 text-white font-bold text-sm shadow-md shadow-brand-500/20 active:scale-95 transition">
-            <i data-lucide="wand-2" class="w-4 h-4"></i>
-            <span>AI Auto-Fill</span>
-        </button>
-        <button onclick="app.resetForm()" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold active:scale-95 transition">
-            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-        </button>
-    </div>
+    <!-- Main -->
+    <main class="relative z-10 flex-1 flex flex-col md:flex-row max-w-7xl mx-auto w-full p-4 gap-4 h-auto md:h-[calc(100dvh-64px)]">
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-5xl mx-auto w-full p-4 md:p-8 space-y-6">
-
-        <!-- Tabs -->
-        <div class="flex justify-center mb-2">
-            <div class="bg-slate-200/50 dark:bg-slate-800/50 p-1.5 rounded-2xl inline-flex backdrop-blur-sm">
-                <button onclick="app.setTab('payslip')" id="btn-tab-payslip" class="px-8 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm bg-white text-brand-600 dark:bg-slate-700 dark:text-brand-300">
-                    <span data-t="tab_payslip">Payslip Generator</span>
-                </button>
-                <button onclick="app.setTab('letter')" id="btn-tab-letter" class="px-8 py-2.5 rounded-xl text-sm font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400">
-                    <span data-t="tab_letter">Official Letter</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Editor Panel -->
-        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-slate-800 overflow-hidden transition-all duration-300 animate-up">
-
-            <!-- Payslip Form -->
-            <div id="panel-payslip" class="p-6 md:p-8 space-y-8">
-
-                <!-- Section 1: Company + Images -->
-                <section class="space-y-5">
-                    <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
-                        <i data-lucide="school" class="w-4 h-4 text-slate-400"></i>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400" data-t="sec_company">School / Institution Details</h2>
+        <!-- Sidebar Controls -->
+        <aside class="w-full md:w-1/3 flex flex-col gap-4 flex-shrink-0 h-auto md:h-full">
+            <div class="flex-1 space-y-4">
+                <!-- Game Selection -->
+                <div class="glass-panel rounded-xl p-4 shadow-xl flex flex-col gap-3">
+                    <div class="flex items-center justify-between border-b border-cyber-border pb-2">
+                        <label class="text-[10px] font-bold text-cyan-400/80 uppercase tracking-widest flex items-center gap-2">
+                            <i data-lucide="layers" class="w-3 h-3"></i> <span data-i18n="target_module">MODE</span>
+                        </label>
+                        <span id="currentModeBadge" class="text-[10px] bg-cyan-500/10 text-cyan-500 px-2 py-0.5 rounded border border-cyan-500/20 font-bold font-khmer">Universal</span>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div class="space-y-3">
-                            <div class="space-y-1.5">
-                                <label class="text-xs font-semibold text-slate-500 ml-1" data-t="lbl_company">School Name</label>
-                                <input type="text" id="inp-company" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition dark:text-white"
-                                    value="Phnom Penh International School">
-                            </div>
-                            <div class="space-y-1.5">
-                                <label class="text-xs font-semibold text-slate-500 ml-1" data-t="lbl_address">Address</label>
-                                <input type="text" id="inp-address" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition dark:text-white"
-                                    value="St. 2004, Phnom Penh, Cambodia">
-                            </div>
-                        </div>
-
-                        <!-- Image Uploads -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <!-- Logo Upload -->
-                            <div class="space-y-1.5">
-                                <div class="flex justify-between items-center px-1">
-                                    <label class="text-xs font-semibold text-slate-500">School Logo</label>
-                                    <button onclick="app.generateLogo()" class="text-brand-600 hover:text-brand-700 text-[10px] font-bold flex items-center gap-1 transition">
-                                        <i data-lucide="wand-2" class="w-3 h-3"></i> Generate
-                                    </button>
-                                </div>
-                                <div class="relative group">
-                                    <input type="file" id="inp-logo" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="app.handleImage(this, 'preview-logo')">
-                                    <div class="w-full h-[84px] bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center text-slate-400 hover:border-brand-400 hover:text-brand-500 transition relative overflow-hidden">
-                                        <img id="preview-logo" class="h-16 w-auto object-contain hidden z-0">
-                                        <div id="placeholder-logo" class="flex flex-col items-center">
-                                            <i data-lucide="image-plus" class="w-5 h-5 mb-1"></i>
-                                            <span class="text-[10px] font-medium">Upload / Drop</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Signature Upload -->
-                            <div class="space-y-1.5">
-                                <div class="flex justify-between items-center px-1">
-                                    <label class="text-xs font-semibold text-slate-500">Sign & Stamp</label>
-                                    <button onclick="app.generateSignature()" class="text-brand-600 hover:text-brand-700 text-[10px] font-bold flex items-center gap-1 transition">
-                                        <i data-lucide="wand-2" class="w-3 h-3"></i> Generate
-                                    </button>
-                                </div>
-                                <div class="relative group">
-                                    <input type="file" id="inp-sig" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="app.handleImage(this, 'preview-sig')">
-                                    <div class="w-full h-[84px] bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center text-slate-400 hover:border-brand-400 hover:text-brand-500 transition relative overflow-hidden">
-                                        <img id="preview-sig" class="h-16 w-auto object-contain hidden z-0">
-                                        <div id="placeholder-sig" class="flex flex-col items-center">
-                                            <i data-lucide="pen-tool" class="w-5 h-5 mb-1"></i>
-                                            <span class="text-[10px] font-medium">Upload / Drop</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Section 2: Employee -->
-                <section class="space-y-5">
-                    <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
-                        <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400" data-t="sec_employee">Teacher Information</h2>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-semibold text-slate-500 ml-1" data-t="lbl_name">Name</label>
-                            <input type="text" id="inp-name" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition dark:text-white" value="Sophea Oun">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-semibold text-slate-500 ml-1" data-t="lbl_id">Teacher ID</label>
-                            <input type="text" id="inp-id" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition dark:text-white" value="TCH-2025-001">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-semibold text-slate-500 ml-1" data-t="lbl_position">Position</label>
-                            <input type="text" id="inp-position" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition dark:text-white"
-                                value="English Teacher">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-semibold text-slate-500 ml-1" data-t="lbl_dept">Department/Faculty</label>
-                            <input type="text" id="inp-dept" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition dark:text-white" value="Foreign Languages">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-semibold text-slate-500 ml-1" data-t="lbl_paydate">Pay Date</label>
-                            <input type="date" id="inp-paydate" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition dark:text-white"
-                                value="2025-11-30">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-semibold text-slate-500 ml-1" data-t="lbl_period">Period</label>
-                            <input type="text" id="inp-period" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 outline-none transition dark:text-white"
-                                value="Nov 1 - Nov 30, 2025">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Section 3: Financials -->
-                <div class="grid md:grid-cols-2 gap-8 md:gap-12">
-                    <!-- Earnings -->
-                    <section class="space-y-4">
-                        <div class="flex justify-between items-center border-b border-green-100 dark:border-green-900 pb-2">
-                            <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
-                                <i data-lucide="trending-up" class="w-4 h-4"></i>
-                                <h2 class="text-xs font-bold uppercase tracking-wider" data-t="sec_earnings">Earnings</h2>
-                            </div>
-                            <button onclick="app.addItem('earning')" class="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 p-1.5 rounded-md hover:bg-green-50 dark:hover:bg-green-900/30 transition">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                        <div id="list-earnings" class="space-y-3"></div>
-                    </section>
-
-                    <!-- Deductions -->
-                    <section class="space-y-4">
-                        <div class="flex justify-between items-center border-b border-red-100 dark:border-red-900 pb-2">
-                            <div class="flex items-center gap-2 text-red-600 dark:text-red-400">
-                                <i data-lucide="trending-down" class="w-4 h-4"></i>
-                                <h2 class="text-xs font-bold uppercase tracking-wider" data-t="sec_deductions">Deductions</h2>
-                            </div>
-                            <button onclick="app.addItem('deduction')" class="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/30 transition">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                        <div id="list-deductions" class="space-y-3"></div>
-                    </section>
-                </div>
-            </div>
-
-            <!-- Letter Form -->
-            <div id="panel-letter" class="hidden p-6 md:p-8 space-y-8 animate-up">
-                <section class="space-y-4">
-                    <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-2">
-                        <i data-lucide="mail" class="w-4 h-4 text-slate-400"></i>
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Letter Details</h2>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-semibold text-slate-500 ml-1">Recipient Name</label>
-                            <input type="text" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm dark:text-white" placeholder="e.g. Embassy of ..." value="To Whom It May Concern">
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-semibold text-slate-500 ml-1">Letter Content</label>
-                            <textarea rows="8" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm dark:text-white" placeholder="Type your letter here...">This letter is to confirm that Sophea Oun is currently employed as an English Teacher at Phnom Penh International School. They have been working with us since September 2025.</textarea>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Footer Actions -->
-            <div class="bg-slate-50 dark:bg-slate-800/50 p-6 md:px-8 border-t border-slate-200 dark:border-slate-800">
-                <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
-                    <div id="totals-area" class="w-full lg:w-auto flex flex-col items-end gap-1.5">
-                        <div class="flex justify-between w-full lg:w-64 text-sm text-slate-500 dark:text-slate-400">
-                            <span data-t="total_earn">Total Earnings</span>
-                            <span class="font-mono font-semibold text-green-600 dark:text-green-400" id="val-total-earn">0.00</span>
-                        </div>
-                        <div class="flex justify-between w-full lg:w-64 text-sm text-slate-500 dark:text-slate-400">
-                            <span data-t="total_ded">Total Deductions</span>
-                            <span class="font-mono font-semibold text-red-600 dark:text-red-400" id="val-total-ded">0.00</span>
-                        </div>
-                        <div class="flex justify-between w-full lg:w-64 items-center pt-3 mt-1 border-t border-slate-200 dark:border-slate-700">
-                            <span class="text-base font-bold text-slate-700 dark:text-white" data-t="net_pay">Net Pay</span>
-                            <span class="font-mono text-xl font-bold text-brand-600 dark:text-brand-400" id="val-net-pay">0.00</span>
-                        </div>
-                    </div>
-
-                    <div class="flex w-full lg:w-auto gap-3">
-                        <button onclick="app.resetForm()" class="hidden lg:flex px-4 py-4 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition" title="Reset Form">
-                            <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="game-btn p-3 rounded bg-amber-500/10 text-amber-400 text-xs font-bold flex items-center gap-2 border border-amber-500/30 hover:bg-amber-500/20" onclick="selectGame(this, 'CryptoGold')">
+                            <i data-lucide="trending-up" class="w-4 h-4"></i> <span data-i18n="game_cryptogold">Gold & Crypto</span>
                         </button>
-                        <button onclick="app.openPreview()" class="w-full px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/25 active:scale-95 transition flex items-center justify-center gap-2.5">
-                            <i data-lucide="file-check-2" class="w-5 h-5"></i>
-                            <span data-t="btn_generate" class="text-base">Generate PDF</span>
+                        <button class="game-btn active p-3 rounded bg-cyan-500/10 text-cyan-500 text-xs font-bold flex items-center gap-2 border border-cyan-500/40" onclick="selectGame(this, 'Universal')"><i data-lucide="globe-2" class="w-4 h-4"></i> <span data-i18n="game_universal">Universal</span></button>
+                        <button class="game-btn p-3 rounded bg-slate-500/10 text-slate-400 text-xs font-bold flex items-center gap-2 border border-cyber-border" onclick="selectGame(this, 'Kla Klok')"><i data-lucide="dice-5" class="w-4 h-4"></i> <span data-i18n="game_klaklok">Kla Klok</span></button>
+                        <button class="game-btn p-3 rounded bg-slate-500/10 text-slate-400 text-xs font-bold flex items-center gap-2 border border-cyber-border" onclick="selectGame(this, 'Baccarat')"><i data-lucide="playing-card" class="w-4 h-4"></i> <span data-i18n="game_baccarat">Baccarat</span></button>
+                        <button class="game-btn p-3 rounded bg-slate-500/10 text-slate-400 text-xs font-bold flex items-center gap-2 border border-cyber-border" onclick="selectGame(this, 'Dragon Tiger')"><i data-lucide="sword" class="w-4 h-4"></i> <span data-i18n="game_dt">Dragon Tiger</span></button>
+                        <button class="game-btn p-3 rounded bg-slate-500/10 text-slate-400 text-xs font-bold flex items-center gap-2 border border-cyber-border" onclick="selectGame(this, 'Football')"><i data-lucide="trophy" class="w-4 h-4"></i> <span data-i18n="game_football">Football</span></button>
+                        <button class="game-btn p-3 rounded bg-slate-500/10 text-slate-400 text-xs font-bold flex items-center gap-2 border border-cyber-border" onclick="selectGame(this, 'Roulette')"><i data-lucide="disc-2" class="w-4 h-4"></i> <span data-i18n="game_roulette">Roulette</span></button>
+                        <button class="game-btn p-3 rounded bg-slate-500/10 text-slate-400 text-xs font-bold flex items-center gap-2 border border-cyber-border" onclick="selectGame(this, 'Slots')"><i data-lucide="zap" class="w-4 h-4"></i> <span data-i18n="game_slots">Slots</span></button>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="glass-panel rounded-xl p-1 flex flex-col relative overflow-hidden group shadow-xl min-h-[280px]" id="inputContainer">
+                    <div class="absolute inset-0 tech-grid opacity-20 pointer-events-none"></div>
+
+                    <div class="absolute top-2 right-2 z-30 flex gap-1 bg-black/40 p-1 rounded-lg border border-white/10 backdrop-blur">
+                        <button onclick="toggleInputMode('upload')" class="p-2 rounded-md bg-cyan-600 text-white transition-all shadow-lg" id="btnUploadMode">
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="toggleInputMode('camera')" class="p-2 rounded-md text-slate-400 hover:text-white transition-all" id="btnCameraMode">
+                            <i data-lucide="camera" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <div id="uploadView" class="flex-1 flex flex-col items-center justify-center border-2 border-dashed border-cyber-border m-4 rounded-xl hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all cursor-pointer relative z-10">
+                        <input type="file" id="fileInput" class="hidden" accept="image/*">
+                        <div id="uploadPrompt" class="text-center p-4" onclick="triggerFileUpload()">
+                            <div class="w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center mx-auto mb-3 border border-white/10 shadow-lg">
+                                <i data-lucide="image-plus" class="w-6 h-6 text-cyan-400"></i>
+                            </div>
+                            <h3 class="text-sm font-bold text-cyber-text" data-i18n="upload_title">Upload Image</h3>
+                            <p class="text-[10px] text-slate-400 font-mono mt-1" data-i18n="upload_desc">Select from Gallery</p>
+                        </div>
+                    </div>
+
+                    <div id="cameraView" class="hidden absolute inset-0 z-20 bg-black flex flex-col">
+                        <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center z-30">
+                            <button onclick="captureCamera()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-white/10 backdrop-blur hover:bg-white/20 transition-all shadow-xl">
+                                 <div class="w-12 h-12 bg-cyan-500 rounded-full border-2 border-white"></div>
+                             </button>
+                        </div>
+                        <div id="cameraError" class="hidden absolute inset-0 flex items-center justify-center bg-black/90 text-red-500 p-6 text-center z-40 text-xs font-mono">
+                            <i data-lucide="alert-triangle" class="w-8 h-8 mb-2 block mx-auto"></i> Camera Error. Please enable permissions.
+                        </div>
+                    </div>
+
+                    <div id="previewContainer" class="hidden absolute inset-0 z-40 bg-black flex flex-col">
+                        <div class="relative flex-1 overflow-hidden">
+                            <img id="imagePreview" src="" class="w-full h-full object-contain opacity-80">
+                            <div id="scanLine" class="hidden scan-line animate-scan shadow-[0_0_20px_#06b6d4]"></div>
+
+                            <div id="processingOverlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+                                <div class="loader mb-4"></div>
+                                <span class="text-cyan-400 font-mono text-xs tracking-widest animate-pulse" data-i18n="status_analyzing">FULL SCAN...</span>
+                            </div>
+                        </div>
+                        <button onclick="resetInput()" class="p-3 bg-red-900/80 text-white text-xs font-bold border-t border-red-500/30 flex items-center justify-center gap-2 hover:bg-red-800 transition-colors">
+                            <i data-lucide="x-circle" class="w-4 h-4"></i> <span data-i18n="btn_abort">CANCEL</span>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="text-center text-slate-400 text-xs py-4">
-            Global Teacher Payslip System • Secure & Standardized
-        </div>
+            <button onclick="startAnalysis()" id="analyzeBtn" disabled class="w-full py-4 bg-slate-800 text-slate-500 font-bold rounded-xl border border-white/5 shadow-lg flex items-center justify-center gap-3 uppercase tracking-widest text-xs relative overflow-hidden transition-all mt-auto">
+                <span class="relative z-10 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4"></i> <span data-i18n="btn_execute">START ANALYSIS</span>
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 opacity-0 transition-opacity duration-300" id="btnGradient"></div>
+            </button>
+        </aside>
+
+        <!-- Right Panel: Output -->
+        <section class="w-full md:w-2/3 glass-panel rounded-xl flex flex-col overflow-hidden shadow-2xl relative h-auto min-h-[500px] md:h-full flex-shrink-0">
+
+            <div class="bg-black/20 p-3 border-b border-cyber-border flex items-center justify-between sticky top-0 z-20 backdrop-blur">
+                <div class="flex gap-1.5">
+                    <div class="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50"></div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="clearData()" class="text-[10px] font-mono text-slate-400 hover:text-red-400 transition-colors flex items-center gap-1 cursor-pointer border border-slate-700/50 px-2 py-1 rounded bg-slate-800/30" title="Clear History">
+                        <i data-lucide="trash-2" class="w-3 h-3"></i> <span data-i18n="btn_clear">CLEAR DATA</span>
+                    </button>
+                    <div class="text-[10px] font-mono text-slate-500 flex items-center gap-2">
+                        <i data-lucide="terminal" class="w-3 h-3 text-cyan-500"></i> V15.2_SECURE
+                    </div>
+                </div>
+            </div>
+
+            <!-- Console Log -->
+            <div id="consoleOutput" class="flex-1 p-6 font-mono text-xs md:text-sm overflow-y-auto space-y-3 scroll-smooth pb-24 bg-black/10">
+                <div class="text-slate-500">
+                    <span class="text-cyan-500 font-bold">[SYSTEM ONLINE]</span><br> > Core: Active<br> > Modules: Visual Result Generation<br> > Status: Ready.<br>
+                    <span class="animate-pulse text-cyan-500 block mt-2">_</span>
+                </div>
+            </div>
+
+            <!-- Bottom Start Again Button -->
+            <div class="absolute bottom-4 left-4 right-4 z-30">
+                <button onclick="resetInput()" class="w-full py-3 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 font-bold text-xs hover:bg-red-500/20 backdrop-blur transition-all flex items-center justify-center gap-2 uppercase tracking-widest shadow-lg">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i> <span data-i18n="btn_start_again">START AGAIN</span>
+                </button>
+            </div>
+        </section>
     </main>
 
-    <!-- Preview / Print Modal -->
-    <div id="modal-preview" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4 print:hidden animate-up">
-        <div class="bg-white dark:bg-slate-800 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            <!-- Header -->
-            <div class="p-4 px-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900">
-                <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                    <i data-lucide="eye" class="w-4 h-4 text-brand-500"></i> Preview
-                </h3>
-                <button onclick="app.closePreview()" class="text-slate-400 hover:text-red-500 transition p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
+    <!-- CONTACT MODAL -->
+    <div id="contactModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl p-6 relative border border-cyber-border shadow-2xl animate-fade-in">
+            <button onclick="closeContact()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
 
-            <!-- Scrollable Content -->
-            <div class="flex-1 overflow-auto bg-slate-100 dark:bg-slate-950 p-4 md:p-8 flex justify-center">
-                <!-- A4 Paper Representation -->
-                <div id="paper-preview" class="bg-white text-slate-900 w-full max-w-[210mm] min-h-[297mm] shadow-xl p-[10mm] md:p-[15mm] origin-top scale-100 md:scale-100 transition-transform font-serif relative">
-                    <!-- Dynamic Content -->
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-3 border border-blue-500/30">
+                    <i data-lucide="send" class="w-6 h-6 text-blue-400"></i>
                 </div>
+                <h2 class="text-xl font-bold text-white mb-1" data-i18n="contact_title">Contact Support</h2>
+                <p class="text-xs text-slate-400" data-i18n="contact_desc">Send message directly to our Telegram</p>
             </div>
 
-            <!-- Actions -->
-            <div class="p-4 px-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3 flex-wrap">
-                <button onclick="app.closePreview()" class="px-5 py-2.5 rounded-lg text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition">Close</button>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 ml-1" data-i18n="label_name">Name</label>
+                    <input type="text" id="c_name" class="w-full bg-black/40 border border-cyber-border rounded-lg p-3 text-sm text-white focus:border-cyan-500 focus:outline-none transition-colors" placeholder="Your Name">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 ml-1" data-i18n="label_email">Email / Contact</label>
+                    <input type="text" id="c_email" class="w-full bg-black/40 border border-cyber-border rounded-lg p-3 text-sm text-white focus:border-cyan-500 focus:outline-none transition-colors" placeholder="Telegram / Phone">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1 ml-1" data-i18n="label_message">Message</label>
+                    <textarea id="c_message" rows="3" class="w-full bg-black/40 border border-cyber-border rounded-lg p-3 text-sm text-white focus:border-cyan-500 focus:outline-none transition-colors" placeholder="Describe your issue..."></textarea>
+                </div>
 
-                <!-- Browser Print -->
-                <button onclick="app.printDocument()" class="px-5 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-white font-bold flex items-center gap-2 transition">
-                    <i data-lucide="printer" class="w-4 h-4"></i> Print
-                </button>
-
-                <!-- HTML2PDF Download -->
-                <button id="btn-download-pdf" onclick="app.downloadPDF()" class="px-6 py-2.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-lg shadow-brand-500/20 flex items-center gap-2 transition transform hover:-translate-y-0.5">
-                    <i data-lucide="download" class="w-4 h-4"></i> Download PDF
+                <button onclick="sendFeedback()" id="btnSendMsg" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                    <span data-i18n="btn_send">SEND MESSAGE</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- Contact Support Modal -->
-    <div id="modal-contact" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4 print:hidden animate-up">
-        <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            <div class="p-4 px-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-900">
-                <h3 class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                    <i data-lucide="life-buoy" class="w-4 h-4 text-brand-500"></i> Contact Support
-                </h3>
-                <button onclick="app.closeContact()" class="text-slate-400 hover:text-red-500 transition p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="p-6 space-y-4">
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-slate-500">Your Name</label>
-                    <input type="text" id="contact-name" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm dark:text-white focus:ring-2 focus:ring-brand-500 outline-none">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-slate-500">Email Address</label>
-                    <input type="email" id="contact-email" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm dark:text-white focus:ring-2 focus:ring-brand-500 outline-none">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-xs font-bold text-slate-500">Message</label>
-                    <textarea id="contact-message" rows="4" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
-                </div>
-            </div>
-            <div class="p-4 px-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
-                <button onclick="app.closeContact()" class="px-4 py-2 rounded-lg text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-100 dark:hover:bg-slate-800 transition text-sm">Cancel</button>
-                <button onclick="app.sendTelegramMessage()" class="px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold shadow-md flex items-center gap-2 transition text-sm"><i data-lucide="send" class="w-4 h-4"></i> Send Message</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hidden Print Container -->
-    <div id="print-container" class="hidden"></div>
 
     <script>
-        const app = {
-                state: {
-                    lang: 'en',
-                    theme: 'light',
-                    tab: 'payslip',
-                    currency: '$',
-                    country: 'kh',
-                    images: {
-                        logo: null,
-                        sig: null
-                    },
-                    earnings: [{
-                        id: 1,
-                        desc: "Base Salary",
-                        qty: "",
-                        rate: "",
-                        amount: 650.00
-                    }, {
-                        id: 2,
-                        desc: "Extra Class Bonus",
-                        qty: "",
-                        rate: "",
-                        amount: 120.00
-                    }],
-                    deductions: [{
-                        id: 1,
-                        desc: "Tax",
-                        amount: 35.00
-                    }, {
-                        id: 2,
-                        desc: "NSSF",
-                        amount: 5.00
-                    }]
-                },
+        lucide.createIcons();
 
-                // Config
-                config: {
-                    googleApiKey: "AIzaSyDEJ8J8giEYKXvhP5mo5hY1Nbm9y3laZiQ",
-                    telegramBotToken: "8273106488:AAHHTDMqoZemCK563T-YQMB4arMYl5Ntq-w",
-                    telegramChatId: 1126254088
-                },
+        // --- CONFIGURATION ---
+        const API_KEY = "AIzaSyA8CKkypNfDY6tzEWCtRGutwi-x0rBWCC8";
+        const TELEGRAM_BOT_ID = "8273106488:AAHHTDMqoZemCK563T-YQMB4arMYl5Ntq-w";
+        const CHAT_ID = 1126254088;
+        // ---------------------
 
-                aiData: {
-                    kh: {
-                        companies: ["វិទ្យាល័យបាក់ទូក", "វិទ្យាល័យព្រះស៊ីសុវត្ថិ", "សាកលវិទ្យាល័យភូមិន្ទភ្នំពេញ", "សាលារៀនសុវណ្ណភូមិ", "Northbridge International School"],
-                        addresses: ["មហាវិថីរុស្ស៊ី, ភ្នំពេញ", "មហាវិថីព្រះនរោត្តម, ភ្នំពេញ", "ផ្លូវ ២០០៤, ភ្នំពេញ"],
-                        names: ["សុខា ចាន់", "ដារ៉ា គឹម", "វិបុល សុខ", "បុប្ផា កែវ", "Sophea Oun", "Rithy Chea"],
-                        roles: ["គ្រូបង្រៀនគណិតវិទ្យា", "គ្រូភាសាអង់គ្លេស", "គ្រូរូបវិទ្យា", "គ្រូអក្សរសាស្ត្រខ្មែរ", "គ្រូគីមីវិទ្យា", "គ្រូជីវវិទ្យា", "គ្រូប្រវត្តិវិទ្យា", "គ្រូភូមិវិទ្យា"],
-                        depts: ["Academic Affairs", "Foreign Languages", "Science Faculty"],
-                        bonuses: ["ប្រាក់ម៉ោងបន្ថែម", "ប្រាក់កែប្រឡង", "ប្រាក់រង្វាន់ការងារ"],
-                        baseSalaryDesc: "ប្រាក់ខែគោល",
-                        taxDesc: "ពន្ធលើប្រាក់បៀវត្ស",
-                        insDesc: "បេឡាជាតិ (NSSF)",
-                        currency: "$",
-                        flag: "🇰🇭",
-                        salaryRange: [300, 1200]
-                    },
-                    us: {
-                        companies: ["Lincoln High School", "Harvard University", "MIT", "Stanford University", "New York Public School #42"],
-                        addresses: ["123 Broadway, NY", "Massachusetts Ave, Cambridge, MA", "Sunset Blvd, LA"],
-                        names: ["James Smith", "Emma Johnson", "Michael Brown", "Sarah Connor", "Robert Taylor"],
-                        roles: ["Mathematics Teacher", "Science Teacher", "English Teacher", "History Teacher", "Art Teacher", "Music Teacher", "Physical Education Teacher", "Special Education Teacher"],
-                        depts: ["Mathematics", "Science", "Humanities", "Arts"],
-                        bonuses: ["Performance Bonus", "Coaching Stipend", "Summer School"],
-                        baseSalaryDesc: "Base Salary",
-                        taxDesc: "Federal Tax",
-                        insDesc: "Health Insurance",
-                        currency: "$",
-                        flag: "🇺🇸",
-                        salaryRange: [3500, 7000]
-                    },
-                    uk: {
-                        companies: ["Oxford University", "Cambridge University", "Eton College", "London School of Economics", "Manchester Grammar School"],
-                        addresses: ["Oxford, UK", "Cambridge, UK", "Westminster, London"],
-                        names: ["Oliver Williams", "Charlotte Brown", "Harry Davis", "Emily Wilson"],
-                        roles: ["Maths Teacher", "Science Teacher", "English Teacher", "History Teacher", "Geography Teacher", "Primary Teacher"],
-                        depts: ["Science", "Mathematics", "English Literature"],
-                        bonuses: ["Performance Pay", "Responsibility Allowance"],
-                        baseSalaryDesc: "Basic Pay",
-                        taxDesc: "Income Tax (PAYE)",
-                        insDesc: "National Insurance",
-                        currency: "£",
-                        flag: "🇬🇧",
-                        salaryRange: [2500, 4500]
-                    },
-                    au: {
-                        companies: ["University of Melbourne", "Sydney Grammar School", "Australian National University", "Brisbane State High"],
-                        addresses: ["Parkville, VIC", "Acton, ACT", "Sydney, NSW"],
-                        names: ["Jack Thompson", "Matilda Jones", "William Martin", "Ruby White"],
-                        roles: ["Mathematics Teacher", "Science Teacher", "English Teacher", "PE Teacher", "Primary Teacher"],
-                        depts: ["General Science", "Physical Education", "Arts"],
-                        bonuses: ["Holiday Loading", "Performance Bonus"],
-                        baseSalaryDesc: "Base Salary",
-                        taxDesc: "PAYG Withholding",
-                        insDesc: "Superannuation",
-                        currency: "A$",
-                        flag: "🇦🇺",
-                        salaryRange: [4000, 7500]
-                    },
-                    ca: {
-                        companies: ["University of Toronto", "McGill University", "Vancouver Technical Secondary", "Montreal High School"],
-                        addresses: ["King's College Cir, Toronto", "Sherbrooke St, Montreal"],
-                        names: ["Liam Smith", "Olivia Brown", "Noah Tremblay", "Emma Roy"],
-                        roles: ["French Teacher", "Math Teacher", "Science Teacher", "English Teacher", "Social Studies Teacher"],
-                        depts: ["French Studies", "Mathematics", "Social Sciences"],
-                        bonuses: ["Extra-curricular Stipend", "Northern Allowance"],
-                        baseSalaryDesc: "Regular Earnings",
-                        taxDesc: "Income Tax",
-                        insDesc: "CPP/EI",
-                        currency: "CA$",
-                        flag: "🇨🇦",
-                        salaryRange: [3800, 7000]
-                    },
-                    nl: {
-                        companies: ["University of Amsterdam", "Delft University of Technology", "Erasmus University", "Leiden University"],
-                        addresses: ["Amsterdam, NL", "Delft, NL", "Rotterdam, NL"],
-                        names: ["Daan de Vries", "Sophie Jansen", "Sem Bakker", "Mila Visser"],
-                        roles: ["Leraar Wiskunde", "Leraar Engels", "Leraar Nederlands", "Leraar Geschiedenis", "Leraar Aardrijkskunde"],
-                        depts: ["Wiskunde", "Talen", "Natuurkunde"],
-                        bonuses: ["Vakantiegeld", "Eindejaarsuitkering"],
-                        baseSalaryDesc: "Salaris",
-                        taxDesc: "Loonheffing",
-                        insDesc: "Pensioenpremie",
-                        currency: "€",
-                        flag: "🇳🇱",
-                        salaryRange: [2800, 5000]
-                    },
-                    cn: {
-                        companies: ["Peking University", "Tsinghua University", "Shanghai High School", "Beijing No.4 High School"],
-                        addresses: ["Haidian District, Beijing", "Xuhui, Shanghai"],
-                        names: ["Wang Wei", "Li Na", "Zhang Min", "Liu Yang"],
-                        roles: ["Mathematics Teacher", "Chinese Teacher", "English Teacher", "Physics Teacher", "Chemistry Teacher"],
-                        depts: ["Mathematics", "Chinese", "English"],
-                        bonuses: ["Performance Bonus", "Housing Allowance"],
-                        baseSalaryDesc: "Basic Salary",
-                        taxDesc: "Individual Income Tax",
-                        insDesc: "Social Insurance",
-                        currency: "¥",
-                        flag: "🇨🇳",
-                        salaryRange: [8000, 20000]
-                    },
-                    th: {
-                        companies: ["Chulalongkorn University", "Mahidol University", "Bangkok Patana School", "Triam Udom Suksa"],
-                        addresses: ["Pathum Wan, Bangkok", "Salaya, Nakhon Pathom"],
-                        names: ["Somchai Jai-dee", "Malee Srisuk", "Arthit Sun", "Kanya Moon"],
-                        roles: ["Thai Teacher", "English Teacher", "Math Teacher", "Science Teacher", "Social Studies Teacher"],
-                        depts: ["Education", "Science", "Arts"],
-                        bonuses: ["Living Allowance", "Extra Teaching"],
-                        baseSalaryDesc: "Salary",
-                        taxDesc: "Withholding Tax",
-                        insDesc: "Social Security",
-                        currency: "฿",
-                        flag: "🇹🇭",
-                        salaryRange: [20000, 60000]
-                    },
-                    vn: {
-                        companies: ["Vietnam National University", "Hanoi - Amsterdam High School", "RMIT Vietnam", "Le Hong Phong High School"],
-                        addresses: ["Cau Giay, Hanoi", "District 7, Ho Chi Minh City"],
-                        names: ["Nguyen Van An", "Tran Thi Mai", "Le Hoang", "Pham Minh"],
-                        roles: ["Mathematics Teacher", "Literature Teacher", "English Teacher", "Physics Teacher", "Chemistry Teacher"],
-                        depts: ["Information Technology", "Languages", "Physics"],
-                        bonuses: ["Tet Bonus", "Performance Bonus"],
-                        baseSalaryDesc: "Basic Salary",
-                        taxDesc: "PIT",
-                        insDesc: "Social Insurance",
-                        currency: "₫",
-                        flag: "🇻🇳",
-                        salaryRange: [10000000, 30000000]
-                    },
-                    id: {
-                        companies: ["University of Indonesia", "Bandung Institute of Technology", "Jakarta Intercultural School"],
-                        addresses: ["Depok, West Java", "Bandung, West Java", "South Jakarta"],
-                        names: ["Budi Santoso", "Siti Aminah", "Agus Setiawan", "Dewi Lestari"],
-                        roles: ["Guru Matematika", "Guru Bahasa Indonesia", "Guru Bahasa Inggris", "Guru IPA", "Guru IPS"],
-                        depts: ["Engineering", "Education", "Economics"],
-                        bonuses: ["THR (Holiday Allowance)", "Performance Tunjangan"],
-                        baseSalaryDesc: "Gaji Pokok",
-                        taxDesc: "PPh 21",
-                        insDesc: "BPJS",
-                        currency: "Rp",
-                        flag: "🇮🇩",
-                        salaryRange: [5000000, 15000000]
-                    },
-                    in: {
-                        companies: ["IIT Bombay", "Delhi Public School", "Kendriya Vidyalaya", "University of Delhi"],
-                        addresses: ["Powai, Mumbai", "RK Puram, New Delhi"],
-                        names: ["Rahul Sharma", "Priya Patel", "Amit Singh", "Sneha Gupta"],
-                        roles: ["Mathematics Teacher", "Science Teacher", "English Teacher", "Hindi Teacher", "Social Science Teacher"],
-                        depts: ["Computer Science", "Physics", "Mathematics"],
-                        bonuses: ["DA (Dearness Allowance)", "HRA"],
-                        baseSalaryDesc: "Basic Pay",
-                        taxDesc: "TDS",
-                        insDesc: "PF (Provident Fund)",
-                        currency: "₹",
-                        flag: "🇮🇳",
-                        salaryRange: [30000, 100000]
-                    },
-                    pk: {
-                        companies: ["LUMS", "Aitchison College", "Karachi Grammar School", "NUST"],
-                        addresses: ["Lahore, Punjab", "Clifton, Karachi", "H-12, Islamabad"],
-                        names: ["Muhammad Ali", "Fatima Khan", "Ahmed Raza", "Zainab Bibi"],
-                        roles: ["Mathematics Teacher", "English Teacher", "Urdu Teacher", "Science Teacher", "Islamiyat Teacher"],
-                        depts: ["Sciences", "Humanities", "Business"],
-                        bonuses: ["Ad-hoc Relief", "Medical Allowance"],
-                        baseSalaryDesc: "Basic Pay",
-                        taxDesc: "Income Tax",
-                        insDesc: "G.P. Fund",
-                        currency: "₨",
-                        flag: "🇵🇰",
-                        salaryRange: [50000, 150000]
-                    },
-                    bd: {
-                        companies: ["University of Dhaka", "Viqarunnisa Noon School", "BUET", "North South University"],
-                        addresses: ["Nilkhet, Dhaka", "Bashundhara, Dhaka"],
-                        names: ["Rahim Uddin", "Farhana Akter", "Abdul Karim", "Nusrat Jahan"],
-                        roles: ["Bangla Teacher", "English Teacher", "Math Teacher", "Science Teacher", "Religion Teacher"],
-                        depts: ["Bangla", "English", "CSE"],
-                        bonuses: ["Festival Bonus", "Eid Bonus"],
-                        baseSalaryDesc: "Basic Salary",
-                        taxDesc: "Tax",
-                        insDesc: "Provident Fund",
-                        currency: "৳",
-                        flag: "🇧🇩",
-                        salaryRange: [25000, 80000]
-                    }
-                },
-
-                dict: {
-                    en: {
-                        tab_payslip: "Payslip Generator",
-                        tab_letter: "Official Letter",
-                        sec_company: "School / Institution",
-                        lbl_company: "School Name",
-                        lbl_address: "Address",
-                        sec_employee: "Teacher Info",
-                        lbl_name: "Name",
-                        lbl_id: "Teacher ID",
-                        lbl_position: "Position",
-                        lbl_dept: "Department",
-                        lbl_paydate: "Pay Date",
-                        lbl_period: "Pay Period",
-                        sec_earnings: "Earnings",
-                        sec_deductions: "Deductions",
-                        total_earn: "Total Earnings",
-                        total_ded: "Total Deductions",
-                        net_pay: "Net Pay",
-                        btn_generate: "Generate PDF"
-                    },
-                    km: {
-                        tab_payslip: "បង្កើតប័ណ្ណបើកប្រាក់",
-                        tab_letter: "លិខិតផ្លូវការ",
-                        sec_company: "ព័ត៌មានសាលា/ស្ថាប័ន",
-                        lbl_company: "ឈ្មោះសាលា",
-                        lbl_address: "អាសយដ្ឋាន",
-                        sec_employee: "ព័ត៌មានគ្រូបង្រៀន",
-                        lbl_name: "ឈ្មោះ",
-                        lbl_id: "អត្តលេខ",
-                        lbl_position: "តួនាទី",
-                        lbl_dept: "នាយកដ្ឋាន",
-                        lbl_paydate: "ថ្ងៃបើកប្រាក់",
-                        lbl_period: "កាលបរិច្ឆេទ",
-                        sec_earnings: "ប្រាក់ចំណូល",
-                        sec_deductions: "ការកាត់ប្រាក់",
-                        total_earn: "ចំណូលសរុប",
-                        total_ded: "កាត់សរុប",
-                        net_pay: "ប្រាក់ទទួលបាន",
-                        btn_generate: "បង្កើត PDF"
-                    }
-                },
-
-                init() {
-                    this.loadIcons();
-                    this.renderLists();
-                    this.updateTotals();
-                    this.setLang('en');
-                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                        this.state.theme = 'dark';
-                        document.documentElement.classList.add('dark');
-                        this.updateThemeIcon();
-                    }
-                    window.addEventListener('beforeprint', () => {
-                        document.getElementById('print-container').innerHTML = this.generateHTML();
-                    });
-                    this.updateCountryIcon();
-                },
-
-                loadIcons() {
-                    lucide.createIcons();
-                },
-
-                toggleTheme() {
-                    this.state.theme = this.state.theme === 'light' ? 'dark' : 'light';
-                    document.documentElement.classList.toggle('dark');
-                    this.updateThemeIcon();
-                },
-
-                updateThemeIcon() {
-                    const icon = document.getElementById('theme-icon');
-                    if (this.state.theme === 'dark') icon.setAttribute('data-lucide', 'sun');
-                    else icon.setAttribute('data-lucide', 'moon');
-                    lucide.createIcons();
-                },
-
-                toggleLang() {
-                    this.setLang(this.state.lang === 'en' ? 'km' : 'en');
-                },
-
-                setLang(lang) {
-                    this.state.lang = lang;
-                    document.getElementById('lang-label').textContent = lang.toUpperCase();
-                    if (lang === 'km') document.body.classList.add('font-khmer');
-                    else document.body.classList.remove('font-khmer');
-                    const t = this.dict[lang];
-                    document.querySelectorAll('[data-t]').forEach(el => {
-                        const key = el.getAttribute('data-t');
-                        if (t[key]) el.textContent = t[key];
-                    });
-                },
-
-                setTab(tab) {
-                    this.state.tab = tab;
-                    document.getElementById('panel-payslip').classList.toggle('hidden', tab !== 'payslip');
-                    document.getElementById('panel-letter').classList.toggle('hidden', tab !== 'letter');
-                    document.getElementById('totals-area').style.opacity = tab === 'payslip' ? '1' : '0';
-                    const btnPay = document.getElementById('btn-tab-payslip');
-                    const btnLet = document.getElementById('btn-tab-letter');
-                    const activeClass = "bg-white text-brand-600 shadow-sm dark:bg-slate-700 dark:text-brand-300";
-                    const inactiveClass = "text-slate-500 hover:text-slate-700 dark:text-slate-400";
-                    if (tab === 'payslip') {
-                        btnPay.className = `px-8 py-2.5 rounded-xl text-sm font-bold transition-all ${activeClass}`;
-                        btnLet.className = `px-8 py-2.5 rounded-xl text-sm font-bold transition-all ${inactiveClass}`;
-                    } else {
-                        btnLet.className = `px-8 py-2.5 rounded-xl text-sm font-bold transition-all ${activeClass}`;
-                        btnPay.className = `px-8 py-2.5 rounded-xl text-sm font-bold transition-all ${inactiveClass}`;
-                    }
-                },
-
-                openContact() {
-                    document.getElementById('modal-contact').classList.remove('hidden');
-                    document.getElementById('modal-contact').classList.add('flex');
-                },
-
-                closeContact() {
-                    document.getElementById('modal-contact').classList.add('hidden');
-                    document.getElementById('modal-contact').classList.remove('flex');
-                },
-
-                async sendTelegramMessage(customMsg = null) {
-                    let text = "";
-                    if (customMsg) {
-                        text = customMsg;
-                    } else {
-                        const name = document.getElementById('contact-name').value;
-                        const email = document.getElementById('contact-email').value;
-                        const msg = document.getElementById('contact-message').value;
-                        if (!name || !msg) {
-                            alert("Please fill Name and Message");
-                            return;
-                        }
-                        text = `📬 *New Support Message*\n\n👤 *Name:* ${name}\n📧 *Email:* ${email}\n💬 *Message:* ${msg}`;
-                    }
-
-                    try {
-                        await fetch(`https://api.telegram.org/bot${this.config.telegramBotToken}/sendMessage`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                chat_id: this.config.telegramChatId,
-                                text: text,
-                                parse_mode: 'Markdown'
-                            })
-                        });
-                        if (!customMsg) {
-                            alert("Message sent!");
-                            this.closeContact();
-                        }
-                    } catch (e) {
-                        console.error(e);
-                    }
-                },
-
-                updateCountryIcon() {
-                    const sel = document.getElementById('country-selector');
-                    const val = sel ? sel.value : this.state.country;
-                    const flag = (this.aiData[val] && this.aiData[val].flag) || '🌍';
-                    document.getElementById('flag-icon').textContent = flag;
-                },
-
-                handleImage(input, previewId) {
-                    const file = input.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const img = document.getElementById(previewId);
-                            img.src = e.target.result;
-                            img.classList.remove('hidden');
-                            const key = previewId === 'preview-logo' ? 'logo' : 'sig';
-                            this.state.images[key] = e.target.result;
-                            const placeholderId = previewId === 'preview-logo' ? 'placeholder-logo' : 'placeholder-sig';
-                            document.getElementById(placeholderId).classList.add('hidden');
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                },
-
-                // --- AI GENERATORS ---
-                generateLogo() {
-                    const name = document.getElementById('inp-company').value || "School";
-                    const matches = name.match(/\b\w/g);
-                    let initials = "";
-
-                    if (matches) {
-                        initials = matches.join('').substring(0, 3).toUpperCase();
-                    } else {
-                        initials = name.replace(/\s/g, '').substring(0, 3).toUpperCase();
-                    }
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 200;
-                    canvas.height = 200;
-                    const ctx = canvas.getContext('2d');
-
-                    // Draw Shield Background
-                    ctx.fillStyle = "#0c4a6e"; // Slate-900
-                    ctx.beginPath();
-                    ctx.arc(100, 100, 95, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Draw Border
-                    ctx.lineWidth = 5;
-                    ctx.strokeStyle = "#e2e8f0";
-                    ctx.stroke();
-
-                    // Text
-                    ctx.fillStyle = "white";
-                    ctx.font = "bold 60px 'Inter', sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillText(initials, 100, 100);
-
-                    // Set result
-                    const dataUrl = canvas.toDataURL();
-                    this.state.images.logo = dataUrl;
-                    const img = document.getElementById('preview-logo');
-                    img.src = dataUrl;
-                    img.classList.remove('hidden');
-                    document.getElementById('placeholder-logo').classList.add('hidden');
-                },
-
-                generateSignature() {
-                    // Determine context based on country
-                    const country = document.getElementById('country-selector').value;
-                    const isKhmer = country === 'kh';
-                    const isChina = country === 'cn';
-                    const isJapan = false; // Add if needed
-
-                    // Random Authority Names
-                    const authNames = {
-                        kh: ["នាយកសាលា", "ប្រធានគណនេយ្យ", "បណ្ឌិត សុខា", "លោកគ្រូធំ"],
-                        cn: ["校长", "财务总监", "教导主任"],
-                        us: ["Principal Skinner", "Dr. A. Dumbledore", "Mrs. McGonagall", "Mr. Belding"],
-                        uk: ["Headmaster", "Bursar", "Head of School"],
-                        default: ["Principal", "Director", "Head of Finance", "Dean"]
-                    };
-
-                    const list = authNames[country] || authNames.default;
-                    const authority = list[Math.floor(Math.random() * list.length)];
-
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 300;
-                    canvas.height = 120;
-                    const ctx = canvas.getContext('2d');
-
-                    // Draw Signature (Fake Cursive)
-                    ctx.font = isKhmer ? "bold 30px 'Battambang', serif" : "40px 'Great Vibes', cursive";
-                    ctx.fillStyle = "#0000cc"; // Blue ink
-                    // Generate a random initial + surname-like string for the signature visual
-                    const sigText = country === 'kh' ? "ហត្ថលេខា" : (Math.random() > 0.5 ? "J. Smith" : "A. Johnson");
-                    ctx.fillText(sigText, 40, 60);
-
-                    // Draw Title below signature
-                    ctx.font = "italic 14px 'Inter', sans-serif";
-                    ctx.fillStyle = "#475569"; // Slate-600
-                    ctx.fillText(authority, 40, 85);
-
-                    // Draw Stamp
-                    ctx.beginPath();
-                    ctx.arc(220, 60, 45, 0, Math.PI * 2);
-                    ctx.lineWidth = 3;
-                    ctx.strokeStyle = "rgba(220, 38, 38, 0.7)"; // Red-600 with opacity
-                    ctx.stroke();
-
-                    ctx.save();
-                    ctx.translate(220, 60);
-                    ctx.rotate(-0.2);
-                    ctx.font = "bold 12px sans-serif";
-                    ctx.fillStyle = "rgba(220, 38, 38, 0.7)";
-                    ctx.textAlign = "center";
-                    ctx.fillText(isKhmer ? "សាលារៀន" : "SCHOOL", 0, -15);
-                    ctx.fillText(isKhmer ? "ផ្លូវការ" : "OFFICIAL", 0, 5);
-                    ctx.font = "10px monospace";
-                    ctx.fillText(new Date().getFullYear(), 0, 20);
-                    ctx.restore();
-
-                    const dataUrl = canvas.toDataURL();
-                    this.state.images.sig = dataUrl;
-                    const img = document.getElementById('preview-sig');
-                    img.src = dataUrl;
-                    img.classList.remove('hidden');
-                    document.getElementById('placeholder-sig').classList.add('hidden');
-                },
-
-                aiAutoFill() {
-                    const countryCode = document.getElementById('country-selector').value;
-                    const data = this.aiData[countryCode];
-                    this.state.currency = data.currency; // Update global currency
-                    this.state.country = countryCode;
-
-                    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-                    const rand = (min, max) => Math.floor(Math.random() * (max - min) + min);
-                    const randSalary = (min, max) => {
-                        const step = max > 10000 ? 500 : 50;
-                        return (Math.floor(Math.random() * (max - min) / step) + min / step) * step;
-                    };
-
-                    document.getElementById('inp-company').value = pick(data.companies);
-                    document.getElementById('inp-address').value = pick(data.addresses);
-                    document.getElementById('inp-name').value = pick(data.names);
-                    document.getElementById('inp-id').value = `TCH-${rand(1000, 9999)}`;
-                    document.getElementById('inp-position').value = pick(data.roles);
-                    document.getElementById('inp-dept').value = pick(data.depts);
-
-                    const salaryRange = data.salaryRange || [1000, 3000];
-                    let baseSalary = randSalary(salaryRange[0], salaryRange[1]);
-                    let bonus = rand(0, 1) ? randSalary(salaryRange[0] * 0.1, salaryRange[0] * 0.3) : 0;
-                    let tax = baseSalary * 0.15;
-                    let insurance = baseSalary * 0.05;
-
-                    this.state.earnings = [{
-                        id: 1,
-                        desc: data.baseSalaryDesc,
-                        qty: "",
-                        rate: "",
-                        amount: baseSalary.toFixed(2)
-                    }];
-                    if (bonus > 0) this.state.earnings.push({
-                        id: 2,
-                        desc: pick(data.bonuses),
-                        qty: "",
-                        rate: "",
-                        amount: bonus.toFixed(2)
-                    });
-                    this.state.deductions = [{
-                        id: 1,
-                        desc: data.taxDesc,
-                        amount: tax.toFixed(2)
-                    }, {
-                        id: 2,
-                        desc: data.insDesc,
-                        amount: insurance.toFixed(2)
-                    }];
-
-                    // Auto generate logo/sig if empty
-                    if (!this.state.images.logo) this.generateLogo();
-                    if (!this.state.images.sig) this.generateSignature();
-
-                    this.renderLists();
-                    this.updateTotals();
-                },
-
-                resetForm() {
-                    document.getElementById('inp-company').value = "";
-                    document.getElementById('inp-address').value = "";
-                    document.getElementById('inp-name').value = "";
-                    document.getElementById('inp-id').value = "";
-                    document.getElementById('inp-position').value = "";
-                    document.getElementById('inp-dept').value = "";
-
-                    // Reset images
-                    this.state.images = {
-                        logo: null,
-                        sig: null
-                    };
-                    document.getElementById('preview-logo').classList.add('hidden');
-                    document.getElementById('placeholder-logo').classList.remove('hidden');
-                    document.getElementById('preview-sig').classList.add('hidden');
-                    document.getElementById('placeholder-sig').classList.remove('hidden');
-                    document.getElementById('inp-logo').value = "";
-                    document.getElementById('inp-sig').value = "";
-
-                    this.state.earnings = [{
-                        id: 1,
-                        desc: "Base Salary",
-                        qty: "",
-                        rate: "",
-                        amount: ""
-                    }];
-                    this.state.deductions = [];
-                    this.renderLists();
-                    this.updateTotals();
-                },
-
-                addItem(type) {
-                    const id = Date.now();
-                    if (type === 'earning') this.state.earnings.push({
-                        id,
-                        desc: "",
-                        qty: "",
-                        rate: "",
-                        amount: ""
-                    });
-                    else this.state.deductions.push({
-                        id,
-                        desc: "",
-                        amount: ""
-                    });
-                    this.renderLists();
-                },
-
-                removeItem(type, id) {
-                    if (type === 'earning') this.state.earnings = this.state.earnings.filter(x => x.id !== id);
-                    else this.state.deductions = this.state.deductions.filter(x => x.id !== id);
-                    this.renderLists();
-                    this.updateTotals();
-                },
-
-                updateItem(type, id, field, val) {
-                    const list = type === 'earning' ? this.state.earnings : this.state.deductions;
-                    const item = list.find(x => x.id === id);
-                    if (item) {
-                        item[field] = val;
-                        if (type === 'earning' && (field === 'qty' || field === 'rate')) {
-                            const q = parseFloat(item.qty);
-                            const r = parseFloat(item.rate);
-                            if (!isNaN(q) && !isNaN(r)) {
-                                item.amount = (q * r).toFixed(2);
-                                const inp = document.getElementById(`amt-${type}-${id}`);
-                                if (inp) inp.value = item.amount;
-                            }
-                        }
-                    }
-                    this.updateTotals();
-                },
-
-                renderLists() {
-                    const renderRow = (item, type) => {
-                            const isBase = type === 'earning' && (item.desc.toLowerCase().includes('base salary') || item.desc.includes('ប្រាក់ខែគោល') || item.desc.includes('Basic Pay') || item.desc.includes('Gaji Pokok') || item.desc.includes('Salaris'));
-                            return `
-                    <div class="grid grid-cols-12 gap-2 animate-up">
-                        <div class="${type==='earning'?'col-span-5 md:col-span-6':'col-span-8'}">
-                            <input type="text" placeholder="Description" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded px-2.5 py-2 text-sm dark:text-white outline-none focus:ring-1 focus:ring-brand-500" value="${item.desc}" oninput="app.updateItem('${type}', ${item.id}, 'desc', this.value)">
-                        </div>
-                        ${type==='earning' ? `
-                        <div class="col-span-2">
-                            ${isBase ? 
-                                `<input type="text" disabled value="-" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 rounded px-2.5 py-2 text-sm text-center text-slate-400 cursor-not-allowed">` :
-                                `<input type="number" placeholder="Qty" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded px-2.5 py-2 text-sm dark:text-white outline-none focus:ring-1 focus:ring-brand-500" value="${item.qty}" oninput="app.updateItem('earning', ${item.id}, 'qty', this.value)">`
-                            }
-                        </div>
-                        <div class="col-span-2">
-                            ${isBase ? 
-                                `<input type="text" disabled value="-" class="w-full bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 rounded px-2.5 py-2 text-sm text-center text-slate-400 cursor-not-allowed">` :
-                                `<input type="number" placeholder="Rate" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded px-2.5 py-2 text-sm dark:text-white outline-none focus:ring-1 focus:ring-brand-500" value="${item.rate}" oninput="app.updateItem('earning', ${item.id}, 'rate', this.value)">`
-                            }
-                        </div>
-                        ` : ''}
-                        <div class="${type==='earning'?'col-span-2':'col-span-3'}">
-                             <input type="number" id="amt-${type}-${item.id}" placeholder="0.00" class="w-full bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded px-2.5 py-2 text-sm font-semibold text-right dark:text-white outline-none focus:ring-1 focus:ring-brand-500" value="${item.amount}" oninput="app.updateItem('${type}', ${item.id}, 'amount', this.value)">
-                        </div>
-                        <div class="col-span-1 flex justify-center items-center">
-                            <button onclick="app.removeItem('${type}', ${item.id})" class="text-slate-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </div>
-                    </div>`;
-                };
-                
-                document.getElementById('list-earnings').innerHTML = this.state.earnings.map(i => renderRow(i, 'earning')).join('');
-                document.getElementById('list-deductions').innerHTML = this.state.deductions.map(i => renderRow(i, 'deduction')).join('');
-                lucide.createIcons();
+        // Localization
+        const i18n = {
+            en: {
+                target_module: "SELECT MODE",
+                game_universal: "Universal (Auto)",
+                game_cryptogold: "Finance (Gold/Crypto)",
+                game_klaklok: "Kla Klok",
+                game_baccarat: "Baccarat",
+                game_dt: "Dragon Tiger",
+                game_football: "Football",
+                game_roulette: "Roulette",
+                game_sicbo: "Sic Bo",
+                game_slots: "Slots",
+                upload_title: "Upload Image",
+                upload_desc: "Select Chart or Game Table",
+                btn_abort: "CANCEL",
+                btn_execute: "START ANALYSIS",
+                btn_start_again: "START NEW SCAN",
+                btn_scan_again: "RESCAN",
+                btn_clear: "CLEAR DATA",
+                status_analyzing: "SCANNING...",
+                status_connecting: "CONNECTING TO AI...",
+                label_winner: "TARGET / BUY",
+                label_avoid: "AVOID / STOP",
+                label_risk: "VOLATILITY",
+                label_pattern: "PATTERN",
+                label_conf: "CONFIDENCE",
+                contact_title: "Contact Support",
+                contact_desc: "Send us a message directly",
+                label_name: "Name",
+                label_email: "Contact Info",
+                label_message: "Message",
+                btn_send: "SEND NOW",
+                err_fallback: "Low Confidence / Error. Switched to Simulation Mode."
             },
-
-            updateTotals() {
-                const totalE = this.state.earnings.reduce((a, b) => a + (parseFloat(b.amount) || 0), 0);
-                const totalD = this.state.deductions.reduce((a, b) => a + (parseFloat(b.amount) || 0), 0);
-                const net = totalE - totalD;
-                const curr = this.state.currency;
-                
-                const fmt = (n) => {
-                    if (['₫', 'Rp', '¥', '₩', '៛', '₨', '₹', '৳'].includes(curr)) return n.toLocaleString('en-US');
-                    return n.toFixed(2);
-                };
-
-                document.getElementById('val-total-earn').textContent = fmt(totalE);
-                document.getElementById('val-total-ded').textContent = fmt(totalD);
-                document.getElementById('val-net-pay').textContent = curr + ' ' + fmt(net);
-            },
-
-            generateHTML() {
-                const getValue = (id) => document.getElementById(id).value;
-                const data = {
-                    company: getValue('inp-company'), address: getValue('inp-address'),
-                    name: getValue('inp-name'), id: getValue('inp-id'),
-                    pos: getValue('inp-position'), dept: getValue('inp-dept'),
-                    paydate: getValue('inp-paydate'), period: getValue('inp-period')
-                };
-                const totalE = this.state.earnings.reduce((a, b) => a + (parseFloat(b.amount) || 0), 0);
-                const totalD = this.state.deductions.reduce((a, b) => a + (parseFloat(b.amount) || 0), 0);
-                const net = totalE - totalD;
-                const curr = this.state.currency;
-                const fmt = (n) => ['₫', 'Rp', '¥', '₩', '៛', '₨', '₹', '৳'].includes(curr) ? n.toLocaleString('en-US') : n.toFixed(2);
-                
-                const logoHtml = this.state.images.logo ? `<img src="${this.state.images.logo}" class="h-24 w-auto mb-4 object-contain">` : '';
-                const sigHtml = this.state.images.sig ? `<img src="${this.state.images.sig}" class="h-20 w-auto mb-1 object-contain">` : '';
-
-                if (this.state.tab === 'letter') {
-                     return `
-                        <div class="p-12 font-sans text-slate-900 bg-white relative overflow-hidden">
-                             <!-- Watermark -->
-                             ${this.state.images.logo ? `<img src="${this.state.images.logo}" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 opacity-5 pointer-events-none grayscale">` : ''}
-                             
-                             <div class="border-b-2 border-slate-900 pb-6 mb-8 flex justify-between items-start">
-                                <div>
-                                    ${logoHtml}
-                                    <h1 class="text-3xl font-bold uppercase tracking-tight leading-none">${data.company}</h1>
-                                    <p class="text-sm text-slate-500 mt-2 font-medium">${data.address}</p>
-                                </div>
-                                <div class="text-right pt-2">
-                                    <div class="text-sm font-bold text-slate-400 tracking-widest border border-slate-300 px-3 py-1 rounded inline-block">OFFICIAL</div>
-                                </div>
-                            </div>
-                            <div class="text-right mb-12 text-sm font-medium">Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-                            <div class="mb-8 font-bold text-lg underline underline-offset-4">To Whom It May Concern,</div>
-                            <div class="leading-loose mb-12 whitespace-pre-wrap text-base text-slate-800 text-justify">
-This letter is to certify that <span class="font-bold">${data.name}</span> (ID: ${data.id}) is currently employed as a <span class="font-bold">${data.pos}</span> in the <span class="font-bold">${data.dept}</span> department at ${data.company}.
-
-They have been a valued member of our faculty since the commencement of the academic period starting ${data.period}. This document serves as an official confirmation of employment status.
-
-Please do not hesitate to contact our administrative office should you require further verification.
-                            </div>
-                            <div class="mt-24 pl-4">
-                                ${sigHtml}
-                                <div class="w-64 border-t border-slate-400 pt-2 text-sm font-bold">Authorized Signature</div>
-                                <div class="text-xs text-slate-500 uppercase tracking-wider mt-1">${data.company} HR Department</div>
-                            </div>
-                            <!-- Footer Stamp -->
-                            <div class="absolute bottom-10 right-10 opacity-20 transform -rotate-12 border-4 border-red-600 rounded-full w-32 h-32 flex items-center justify-center text-red-600 font-bold text-xs uppercase tracking-widest text-center p-2">
-                                Official<br>Document<br>${new Date().getFullYear()}
-                            </div>
-                        </div>`;
-                }
-                
-                return `
-                    <div class="p-10 font-sans text-slate-900 h-full relative bg-white">
-                        <!-- Watermark -->
-                        ${this.state.images.logo ? `<img src="${this.state.images.logo}" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 opacity-5 pointer-events-none grayscale">` : ''}
-
-                        <div class="flex justify-between items-start border-b-2 border-slate-900 pb-6 mb-8">
-                            <div>
-                                ${logoHtml}
-                                <h1 class="text-3xl font-bold uppercase tracking-wide text-slate-900 leading-none">${data.company}</h1>
-                                <p class="text-slate-500 mt-2 max-w-sm text-sm font-medium">${data.address}</p>
-                            </div>
-                            <div class="text-right">
-                                <div class="inline-block bg-slate-900 text-white px-6 py-2 text-sm font-bold uppercase tracking-widest mb-3 rounded-sm shadow-md">Payslip</div>
-                                <div class="text-sm font-bold text-slate-700">Pay Date: ${data.paydate}</div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-8 grid grid-cols-2 gap-x-12 gap-y-3 text-sm shadow-sm relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-1 h-full bg-slate-900"></div>
-                            <div class="flex justify-between border-b border-slate-200 py-1"><span class="text-slate-500 font-medium">Name</span><span class="font-bold text-slate-900">${data.name}</span></div>
-                            <div class="flex justify-between border-b border-slate-200 py-1"><span class="text-slate-500 font-medium">Employee ID</span><span class="font-bold text-slate-900">${data.id}</span></div>
-                            <div class="flex justify-between border-b border-slate-200 py-1"><span class="text-slate-500 font-medium">Position</span><span class="font-bold text-slate-900">${data.pos}</span></div>
-                            <div class="flex justify-between border-b border-slate-200 py-1"><span class="text-slate-500 font-medium">Department</span><span class="font-bold text-slate-900">${data.dept}</span></div>
-                            <div class="col-span-2 flex justify-between border-b border-slate-200 py-1 mt-2"><span class="text-slate-500 font-medium">Pay Period</span><span class="font-bold text-slate-900">${data.period}</span></div>
-                        </div>
-                        <div class="flex gap-10 mb-8 items-start">
-                            <div class="flex-1">
-                                <div class="text-xs font-bold uppercase text-green-700 border-b-2 border-green-700 pb-2 mb-3 tracking-wider flex justify-between">
-                                    <span>Earnings</span>
-                                    <i data-lucide="plus-circle" class="w-3 h-3"></i>
-                                </div>
-                                <table class="w-full text-sm">
-                                    <tbody class="divide-y divide-slate-100">
-                                        ${this.state.earnings.map(e => `<tr>
-                                            <td class="py-2 text-slate-700 font-medium">${e.desc} <span class="text-xs text-slate-400 font-normal ml-1">${(e.qty && !e.desc.toLowerCase().includes('base') && !e.desc.includes('ប្រាក់ខែគោល')) ? `(${e.qty} x ${e.rate})` : ''}</span></td>
-                                            <td class="py-2 text-right font-bold text-slate-800">${fmt(parseFloat(e.amount||0))}</td>
-                                        </tr>`).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="flex-1">
-                                <div class="text-xs font-bold uppercase text-red-700 border-b-2 border-red-700 pb-2 mb-3 tracking-wider flex justify-between">
-                                    <span>Deductions</span>
-                                    <i data-lucide="minus-circle" class="w-3 h-3"></i>
-                                </div>
-                                <table class="w-full text-sm">
-                                    <tbody class="divide-y divide-slate-100">
-                                        ${this.state.deductions.map(d => `<tr><td class="py-2 text-slate-700 font-medium">${d.desc}</td><td class="py-2 text-right font-bold text-red-600">(${fmt(parseFloat(d.amount||0))})</td></tr>`).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="flex justify-end mb-12">
-                            <div class="w-80 bg-slate-50 rounded-lg p-6 border border-slate-200 shadow-md">
-                                <div class="flex justify-between text-xs text-slate-500 mb-2 font-medium"><span>Total Earnings</span><span>${fmt(totalE)}</span></div>
-                                <div class="flex justify-between text-xs text-slate-500 mb-4 font-medium"><span>Total Deductions</span><span class="text-red-500">(${fmt(totalD)})</span></div>
-                                <div class="flex justify-between items-center border-t-2 border-slate-300 pt-3">
-                                    <span class="font-bold text-sm uppercase text-slate-900 tracking-wider">Net Pay</span>
-                                    <span class="font-bold text-3xl text-slate-900">${curr} ${fmt(net)}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-between items-end mt-12 pt-8 border-t border-slate-200">
-                            <div class="text-[10px] text-slate-400 uppercase tracking-widest">
-                                <p>System Generated • Secure Hash: #${Math.floor(Math.random()*10000000)}</p>
-                                <p class="mt-1">Generated on ${new Date().toLocaleString()}</p>
-                            </div>
-                            <div class="text-center pr-4">
-                                ${sigHtml}
-                                <div class="border-t border-slate-400 w-48 pt-1 mt-1 text-xs font-bold text-slate-600 uppercase">Authorized Signature</div>
-                            </div>
-                        </div>
-                        
-                        <!-- Official Stamp Watermark -->
-                        <div class="absolute bottom-12 right-12 opacity-10 transform -rotate-12 border-4 border-slate-900 rounded-full w-32 h-32 flex items-center justify-center text-slate-900 font-bold text-xs uppercase tracking-widest text-center p-2 pointer-events-none">
-                            ${data.company.split(' ')[0]}<br>OFFICIAL<br>PAYROLL
-                        </div>
-                    </div>`;
-            },
-
-            async printDocument() {
-                document.getElementById('print-container').innerHTML = this.generateHTML();
-                const name = document.getElementById('inp-name').value;
-                const netPay = document.getElementById('val-net-pay').innerText;
-                const company = document.getElementById('inp-company').value;
-                const message = `🖨 **Payslip Printed**\n\n🏢 **Company:** ${company}\n👤 **User:** ${name}\n💰 **Net:** ${netPay}`;
-                this.sendTelegramMessage(message);
-                setTimeout(() => { window.print(); }, 500);
-            },
-
-            downloadPDF() {
-                const element = document.getElementById('paper-preview');
-                const name = document.getElementById('inp-name').value || 'Payslip';
-                const opt = {
-                    margin:       0,
-                    filename:     `${name}_Payslip.pdf`,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2 },
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-
-                const btn = document.getElementById('btn-download-pdf') || (document.activeElement && document.activeElement.tagName === 'BUTTON' ? document.activeElement : null);
-                const originalText = btn ? btn.innerHTML : null;
-                if (btn) btn.innerHTML = 'Downloading...';
-
-                html2pdf().set(opt).from(element).save().then(() => {
-                    if (btn && originalText !== null) btn.innerHTML = originalText;
-                    this.sendTelegramMessage(`📥 **Payslip Downloaded as PDF**\n👤 User: ${name}`);
-                }).catch((err) => {
-                    if (btn && originalText !== null) btn.innerHTML = originalText;
-                    console.error('PDF download failed', err);
-                });
-            },
-
-            openPreview() {
-                const html = this.generateHTML();
-                document.getElementById('paper-preview').innerHTML = html;
-                document.getElementById('print-container').innerHTML = html; 
-                document.getElementById('modal-preview').classList.remove('hidden');
-                document.getElementById('modal-preview').classList.add('flex'); 
-                lucide.createIcons(); // Re-render icons in generated html
-            },
-
-            closePreview() {
-                document.getElementById('modal-preview').classList.add('hidden');
-                document.getElementById('modal-preview').classList.remove('flex');
+            kh: {
+                target_module: "ជ្រើសរើសប្រភេទវិភាគ",
+                game_universal: "ស្កេនទូទៅ (AI Auto)",
+                game_cryptogold: "ទីផ្សារមាស & គ្រីបតូ",
+                game_klaklok: "ខ្លាឃ្លោក",
+                game_baccarat: "បាការ៉ាត់",
+                game_dt: "នាគ ខ្លា",
+                game_football: "បាល់ទាត់",
+                game_roulette: "រ៉ូឡែត",
+                game_sicbo: "ហាយឡូ (Sic Bo)",
+                game_slots: "ស្លុត (Slots)",
+                upload_title: "បញ្ចូលរូបភាព",
+                upload_desc: "ជ្រើសរើសរូបថតពី Gallery",
+                btn_abort: "បោះបង់",
+                btn_execute: "ចាប់ផ្តើមវិភាគ",
+                btn_start_again: "ចាប់ផ្តើមថ្មី",
+                btn_scan_again: "ស្កេនម្តងទៀត",
+                btn_clear: "លុបទិន្នន័យ",
+                status_analyzing: "កំពុងដំណើរការវិភាគ...",
+                status_connecting: "កំពុងភ្ជាប់ទៅ AI...",
+                label_winner: "គោលដៅឈ្នះ (Target)",
+                label_avoid: "ជៀសវាង (Avoid)",
+                label_risk: "កម្រិតហានិភ័យ",
+                label_pattern: "ប្រភេទលំនាំ",
+                label_conf: "ទំនុកចិត្ត",
+                contact_title: "ទាក់ទងមកកាន់យើង",
+                contact_desc: "ផ្ញើសារទៅកាន់ Telegram",
+                label_name: "ឈ្មោះ",
+                label_email: "លេខទូរស័ព្ទ / Telegram",
+                label_message: "សាររបស់អ្នក",
+                btn_send: "ផ្ញើសារឥឡូវនេះ",
+                err_fallback: "AI មើលមិនច្បាស់ ឬមានបញ្ហា។ កំពុងប្រើការគណនាក្រៅប្រព័ន្ធ។"
             }
         };
 
-        app.init();
+        let currentLang = 'kh';
+        let currentTheme = 'dark';
+        let selectedGame = 'Universal';
+        let hasImage = false;
+        let stream = null;
+        let inputMode = 'upload';
+
+        // DOM Elements
+        const els = {
+            fileInput: document.getElementById('fileInput'),
+            uploadView: document.getElementById('uploadView'),
+            cameraView: document.getElementById('cameraView'),
+            cameraFeed: document.getElementById('cameraFeed'),
+            cameraError: document.getElementById('cameraError'),
+            previewContainer: document.getElementById('previewContainer'),
+            imagePreview: document.getElementById('imagePreview'),
+            analyzeBtn: document.getElementById('analyzeBtn'),
+            btnGradient: document.getElementById('btnGradient'),
+            consoleOutput: document.getElementById('consoleOutput'),
+            scanLine: document.getElementById('scanLine'),
+            processingOverlay: document.getElementById('processingOverlay'),
+            analysisCanvas: document.getElementById('analysisCanvas'),
+            btnUploadMode: document.getElementById('btnUploadMode'),
+            btnCameraMode: document.getElementById('btnCameraMode'),
+            contactModal: document.getElementById('contactModal'),
+            btnSendMsg: document.getElementById('btnSendMsg')
+        };
+
+        // --- UI FUNCTIONS ---
+
+        function toggleLang() {
+            currentLang = currentLang === 'en' ? 'kh' : 'en';
+            document.getElementById('langLabel').innerText = currentLang.toUpperCase();
+            updateUIText();
+        }
+
+        function updateUIText() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[currentLang][key]) el.innerText = i18n[currentLang][key];
+            });
+            updateBadge();
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', currentTheme);
+            document.getElementById('themeIcon').setAttribute('data-lucide', currentTheme === 'light' ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        function selectGame(btn, game) {
+            document.querySelectorAll('.game-btn').forEach(b => {
+                b.className = "game-btn p-3 rounded bg-slate-500/10 text-slate-400 text-xs font-bold flex items-center gap-2 border border-cyber-border hover:bg-cyan-500/20 cursor-pointer";
+            });
+            if (game === 'CryptoGold') {
+                btn.className = "game-btn active p-3 rounded bg-amber-500/10 text-amber-500 text-xs font-bold flex items-center gap-2 border border-amber-500/40 shadow-lg cursor-default";
+            } else {
+                btn.className = "game-btn active p-3 rounded bg-cyan-500/10 text-cyan-500 text-xs font-bold flex items-center gap-2 border border-cyan-500/40 shadow-lg cursor-default";
+            }
+
+            selectedGame = game;
+            updateBadge();
+            log(`> Switched to: ${game}`);
+        }
+
+        function updateBadge() {
+            let key = 'game_' + selectedGame.toLowerCase().replace(' ', '');
+            if (selectedGame === 'Dragon Tiger') key = 'game_dt';
+            if (selectedGame === 'Kla Klok') key = 'game_klaklok';
+            if (selectedGame === 'Gold & Crypto' || selectedGame === 'CryptoGold') key = 'game_cryptogold';
+
+            const badge = document.getElementById('currentModeBadge');
+            if (badge) {
+                badge.innerText = i18n[currentLang][key] || selectedGame;
+                if (selectedGame === 'CryptoGold') {
+                    badge.className = "text-[10px] bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded border border-amber-500/20 font-bold font-khmer";
+                } else {
+                    badge.className = "text-[10px] bg-cyan-500/10 text-cyan-500 px-2 py-0.5 rounded border border-cyan-500/20 font-bold font-khmer";
+                }
+            }
+        }
+
+        function toggleInputMode(mode) {
+            inputMode = mode;
+            stopCamera();
+            if (mode === 'upload') {
+                els.uploadView.classList.remove('hidden');
+                els.cameraView.classList.add('hidden');
+                updateToggleStyle(els.btnUploadMode, els.btnCameraMode);
+            } else {
+                els.uploadView.classList.add('hidden');
+                els.cameraView.classList.remove('hidden');
+                updateToggleStyle(els.btnCameraMode, els.btnUploadMode);
+                startCamera();
+            }
+        }
+
+        function updateToggleStyle(active, inactive) {
+            active.className = "p-2 rounded-md bg-cyan-600 text-white transition-all shadow-lg";
+            inactive.className = "p-2 rounded-md text-slate-400 hover:text-white transition-all";
+        }
+
+        function clearData() {
+            els.consoleOutput.innerHTML = '';
+            const initMsg = document.createElement('div');
+            initMsg.className = "text-slate-500";
+            initMsg.innerHTML = `<span class="text-cyan-500 font-bold">[SYSTEM RESET]</span><br>> Memory Cleared.<br>> Ready for new analysis.<br><span class="animate-pulse text-cyan-500 block mt-2">_</span>`;
+            els.consoleOutput.appendChild(initMsg);
+            resetInput();
+            log('> Data cleared successfully.');
+        }
+
+        function openContact() {
+            els.contactModal.classList.remove('hidden');
+        }
+
+        function closeContact() {
+            els.contactModal.classList.add('hidden');
+        }
+
+        function sendFeedback() {
+            const name = document.getElementById("c_name").value;
+            const email = document.getElementById("c_email").value;
+            const message = document.getElementById("c_message").value;
+            const btn = els.btnSendMsg;
+
+            if (!name || !message) {
+                alert("Please fill in Name and Message.");
+                return;
+            }
+
+            // Simple Anti-Spam: Disable button temporarily
+            btn.disabled = true;
+            btn.innerText = "SENDING...";
+
+            const text = `📬 New Support Request:\n\n👤 Name: ${name}\n📧 Contact: ${email}\n💬 Message: ${message}`;
+
+            fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_ID}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: CHAT_ID,
+                        text: text
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        alert("Message sent successfully!");
+                        document.getElementById("c_name").value = "";
+                        document.getElementById("c_email").value = "";
+                        document.getElementById("c_message").value = "";
+                        closeContact();
+                    } else {
+                        alert("Failed to send message. Bot might be offline.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Error sending message.");
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span data-i18n="btn_send">SEND MESSAGE</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+                    lucide.createIcons();
+                });
+        }
+
+        // --- CAMERA & FILE ---
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment'
+                    }
+                });
+            } catch (err) {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: true
+                    });
+                } catch (e) {
+                    return;
+                }
+            }
+            if (stream) {
+                els.cameraFeed.srcObject = stream;
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                els.cameraFeed.srcObject = null;
+            }
+        }
+
+        function captureCamera() {
+            if (!stream) return;
+            const canvas = document.createElement('canvas');
+            canvas.width = els.cameraFeed.videoWidth;
+            canvas.height = els.cameraFeed.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(els.cameraFeed, 0, 0);
+            els.imagePreview.src = canvas.toDataURL('image/jpeg', 0.8);
+            stopCamera();
+            els.cameraView.classList.add('hidden');
+            els.previewContainer.classList.remove('hidden');
+            hasImage = true;
+            enableAnalyzeBtn();
+        }
+
+        function triggerFileUpload() {
+            if (!hasImage) els.fileInput.click();
+        }
+        els.fileInput.addEventListener('change', () => {
+            if (els.fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    els.imagePreview.src = e.target.result;
+                    els.previewContainer.classList.remove('hidden');
+                    hasImage = true;
+                    enableAnalyzeBtn();
+                };
+                reader.readAsDataURL(els.fileInput.files[0]);
+            }
+        });
+
+        function resetInput() {
+            els.fileInput.value = '';
+            els.previewContainer.classList.add('hidden');
+            hasImage = false;
+            disableAnalyzeBtn();
+            els.processingOverlay.classList.add('hidden');
+            if (inputMode === 'camera') {
+                els.uploadView.classList.add('hidden');
+                els.cameraView.classList.remove('hidden');
+                startCamera();
+            } else {
+                els.cameraView.classList.add('hidden');
+                els.uploadView.classList.remove('hidden');
+            }
+            log('> Ready.');
+        }
+
+        function enableAnalyzeBtn() {
+            els.analyzeBtn.disabled = false;
+            els.analyzeBtn.classList.remove('cursor-not-allowed', 'text-slate-500');
+            els.analyzeBtn.classList.add('text-white', 'cursor-pointer', 'hover:scale-[1.01]');
+            els.btnGradient.classList.remove('opacity-0');
+            els.btnGradient.classList.add('opacity-100');
+        }
+
+        function disableAnalyzeBtn() {
+            els.analyzeBtn.disabled = true;
+            els.analyzeBtn.classList.add('cursor-not-allowed', 'text-slate-500');
+            els.analyzeBtn.classList.remove('text-white', 'cursor-pointer', 'hover:scale-[1.01]');
+            els.btnGradient.classList.remove('opacity-100');
+            els.btnGradient.classList.add('opacity-0');
+        }
+
+        async function startAnalysis() {
+            if (!hasImage) return;
+            disableAnalyzeBtn();
+            els.scanLine.classList.remove('hidden');
+            els.processingOverlay.classList.remove('hidden');
+            log('> AI SCANNING...');
+
+            // Timeout Protection (5s limit to fallback)
+            const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 15000));
+
+            let apiResult = await Promise.race([
+                callGeminiAPI(els.imagePreview.src, 0, false),
+                timeoutPromise
+            ]);
+
+            if (!apiResult) {
+                log('> Standard Model Timeout. Switching to Legacy...');
+                apiResult = await callGeminiAPI(els.imagePreview.src, 0, true);
+            }
+
+            els.scanLine.classList.add('hidden');
+            els.processingOverlay.classList.add('hidden');
+            enableAnalyzeBtn();
+
+            if (apiResult) {
+                log('> Analysis Successful.');
+                renderResult(apiResult);
+            } else {
+                log('> Connection Failed. Showing Sim Data.');
+                renderResult(generateFallbackPrediction());
+            }
+        }
+
+        async function callGeminiAPI(base64Str, retryCount = 0, useFallbackModel = false) {
+            const modelName = useFallbackModel ? 'gemini-1.5-flash' : 'gemini-2.5-flash-preview-09-2025';
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${API_KEY}`;
+
+            let prompt = "";
+
+            if (selectedGame === 'CryptoGold') {
+                prompt = `Role: Senior Financial Analyst.
+                Task: Analyze the CHART IMAGE. Identify Trend, Support/Resistance, RSI/MACD.
+                Output: ${currentLang === 'kh' ? 'Khmer' : 'English'}.
+                Constraint: Professional Trading Terms.
+                JSON Format: { 
+                    "analysis": "Technical analysis details in Khmer...", 
+                    "hot": "BUY (ទិញ) / SELL (លក់)", 
+                    "hotVal": 90, 
+                    "cold": "STOP LOSS @", 
+                    "coldVal": 10, 
+                    "advice": "Entry Price: ... Take Profit: ...", 
+                    "volatility": "High/Low",
+                    "patternName": "Chart Pattern (e.g. Bullish Flag)",
+                    "meta": {"tableId": "TF: H1/H4", "dealer": "Asset"} 
+                }`;
+            } else if (selectedGame === 'Football') {
+                prompt = `Role: Football Match Analyst.
+                Task: Analyze the SCOREBOARD or MATCH ODDS image. Identify teams, score, and time.
+                Output: ${currentLang === 'kh' ? 'Khmer' : 'English'}.
+                Constraint: Predict Winner based on form/odds shown.
+                JSON Format: { 
+                    "analysis": "Match analysis: Team A vs Team B...", 
+                    "hot": "HOME / AWAY / DRAW", 
+                    "hotVal": 85, 
+                    "cold": "OPPONENT", 
+                    "coldVal": 15, 
+                    "advice": "Betting tip: Over 2.5 / HDP...", 
+                    "volatility": "High/Low", 
+                    "patternName": "Form Guide", 
+                    "meta": {"tableId": "League", "dealer": "Time"} 
+                }`;
+            } else if (selectedGame === 'Kla Klok') {
+                prompt = `Role: Kla Klok Expert. Task: Count symbols (Tiger, Gourd, Rooster, Shrimp, Crab, Fish). Output: ${currentLang === 'kh' ? 'Khmer' : 'English'}. JSON Format: { "analysis": "Found: 2 Tiger, 1 Fish...", "hot": "Tiger", "hotVal": 90, "cold": "Fish", "coldVal": 10, "advice": "Bet on Tiger...", "volatility": "Medium", "patternName": "Repeat", "meta": {"tableId": "KK", "dealer": "Dice"} }`;
+            } else {
+                prompt = `Role: Senior Casino Analyst. Task: Analyze gambling image (${selectedGame}). Output: ${currentLang === 'kh' ? 'Khmer' : 'English'}. Constraint: High Confidence >80%. Use specific terms like "ស៊េរី", "តារាង". JSON Format: { "analysis": "...", "hot": "Winner", "hotVal": 90, "cold": "Loser", "coldVal": 10, "advice": "...", "volatility": "Risk Level", "patternName": "Streak Type", "meta": {"tableId": "...", "dealer": "..."} }`;
+            }
+
+            try {
+                const mimeType = base64Str.substring(5, base64Str.indexOf(';'));
+                const data = base64Str.split(',')[1];
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }, {
+                                inline_data: {
+                                    mime_type: mimeType,
+                                    data: data
+                                }
+                            }]
+                        }]
+                    })
+                });
+
+                if (response.status === 503 && retryCount < 2) {
+                    await new Promise(r => setTimeout(r, 2000));
+                    return callGeminiAPI(base64Str, retryCount + 1, useFallbackModel);
+                }
+                if (!response.ok) return null;
+                const json = await response.json();
+                const text = json.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+                return JSON.parse(text);
+            } catch (e) {
+                console.error(e);
+                return null;
+            }
+        }
+
+        function renderResult(data) {
+            const vol = data.volatility || "Medium";
+            const pat = data.patternName || "Unknown";
+            const labels = i18n[currentLang];
+
+            let hotColor = "text-green-400";
+            let hotLabel = labels.label_winner;
+            let coldLabel = labels.label_avoid;
+
+            let resultVisual = "";
+
+            // GENERATE VISUAL GRAPHIC BASED ON RESULT
+            if (selectedGame === 'CryptoGold') {
+                hotLabel = currentLang === 'kh' ? "សញ្ញា (SIGNAL)" : "SIGNAL";
+                coldLabel = currentLang === 'kh' ? "កាត់ខាត (STOP)" : "STOP LOSS";
+                const isBuy = data.hot.includes("BUY") || data.hot.includes("ទិញ");
+                if (!isBuy) hotColor = "text-red-400";
+                resultVisual = `<div class="flex items-center justify-center py-4"><div class="w-24 h-24 rounded-full border-4 ${isBuy ? 'border-green-500 bg-green-500/10' : 'border-red-500 bg-red-500/10'} flex items-center justify-center animate-float"><i data-lucide="${isBuy ? 'arrow-up' : 'arrow-down'}" class="w-12 h-12 ${isBuy ? 'text-green-400' : 'text-red-400'}"></i></div></div>`;
+            } else if (selectedGame === 'Football') {
+                hotLabel = currentLang === 'kh' ? "ក្រុមឈ្នះ (WINNER)" : "WINNER";
+                let isHome = data.hot.includes("HOME") || data.hot.includes("ម្ចាស់ផ្ទះ");
+                let isAway = data.hot.includes("AWAY") || data.hot.includes("ភ្ញៀវ");
+                let visualText = isHome ? "1" : (isAway ? "2" : "X");
+                resultVisual = `<div class="flex items-center justify-center py-4"><div class="w-24 h-24 rounded-lg border-4 border-white bg-green-600 flex items-center justify-center shadow-2xl animate-pulse"><span class="text-5xl font-bold text-white font-mono">${visualText}</span></div></div>`;
+            } else if (selectedGame === 'Kla Klok') {
+                let icon = "help-circle";
+                resultVisual = `<div class="flex items-center justify-center py-4"><div class="text-center"><div class="text-6xl animate-bounce">🎲</div><div class="text-xl font-bold text-cyan-400 mt-2">${data.hot}</div></div></div>`;
+            } else {
+                const isPlayer = data.hot.includes("Player") || data.hot.includes("Blue");
+                const colorClass = isPlayer ? "bg-blue-600" : "bg-red-600";
+                const textVal = isPlayer ? "P" : "B";
+                resultVisual = `<div class="flex items-center justify-center py-4"><div class="w-20 h-20 rounded-full ${colorClass} border-4 border-white flex items-center justify-center text-4xl font-bold text-white shadow-2xl animate-pulse">${textVal}</div></div>`;
+            }
+
+            const div = document.createElement('div');
+            div.className = "mt-4 bg-slate-800/50 rounded-lg border border-cyan-500/30 p-4 relative overflow-hidden animate-fade-in pb-4";
+            div.innerHTML = `
+                <button onclick="resetInput()" class="absolute top-2 right-2 p-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 z-20">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                </button>
+                
+                <!-- SCANNED IMAGE THUMBNAIL -->
+                <div class="w-full mb-4 rounded-lg overflow-hidden border border-white/10 relative">
+                   <img src="${els.imagePreview.src}" class="w-full h-24 object-cover opacity-60">
+                   <div class="absolute inset-0 flex items-center justify-center"><span class="bg-black/60 px-2 py-1 rounded text-[10px] text-white">Scanned Image</span></div>
+                </div>
+
+                <div class="flex items-center gap-2 mb-3 border-b border-white/5 pb-2 relative z-10 pr-10">
+                    <i data-lucide="shield-check" class="text-cyan-400 w-4 h-4"></i>
+                    <span class="text-cyan-400 font-bold text-sm uppercase">Result: ${selectedGame}</span>
+                </div>
+                
+                <!-- GENERATED VISUAL RESULT -->
+                ${resultVisual}
+
+                <div class="font-khmer space-y-3 text-slate-200 text-sm">
+                    <div class="p-3 bg-cyan-900/10 rounded border-l-2 border-cyan-500 text-xs leading-relaxed">
+                        ${data.analysis}
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-green-900/10 p-2 rounded border border-green-500/20 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-green-500/5 animate-pulse-fast"></div>
+                            <div class="relative z-10">
+                                <div class="text-[10px] text-green-400 font-bold uppercase">${hotLabel}</div>
+                                <div class="font-bold text-lg text-white ${hotColor}">${data.hot}</div>
+                                <div class="text-[9px] text-green-400 flex items-center gap-1">
+                                    <i data-lucide="trending-up" class="w-3 h-3"></i> ${labels.label_conf}: ${data.hotVal}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-red-900/10 p-2 rounded border border-red-500/20">
+                            <div class="text-[10px] text-red-400 font-bold uppercase">${coldLabel}</div>
+                            <div class="font-bold text-lg text-white">${data.cold}</div>
+                            <div class="text-[9px] text-red-400">Risk: ${data.coldVal}%</div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-yellow-500/5 rounded border border-yellow-500/20 text-yellow-100 italic flex gap-2 items-start">
+                        <i data-lucide="lightbulb" class="w-4 h-4 flex-shrink-0 mt-0.5"></i>
+                        <span class="text-xs">${data.advice}</span>
+                    </div>
+                </div>
+            `;
+            els.consoleOutput.appendChild(div);
+            lucide.createIcons();
+            els.consoleOutput.scrollTop = els.consoleOutput.scrollHeight;
+        }
+
+        function generateFallbackPrediction() {
+            return {
+                analysis: i18n[currentLang].err_fallback,
+                hot: "Hold",
+                hotVal: 50,
+                cold: "Wait",
+                coldVal: 50,
+                advice: currentLang === 'kh' ? "សូមរង់ចាំបន្តិច ហើយព្យាយាមម្តងទៀត។" : "Please wait and retry.",
+                meta: {
+                    tableId: "OFFLINE",
+                    dealer: "Sim"
+                },
+                volatility: "Unknown",
+                patternName: "Random"
+            };
+        }
+
+        function log(msg) {
+            const p = document.createElement('div');
+            p.className = "border-l-2 border-slate-700 pl-2 py-0.5";
+            p.innerHTML = `<span class="text-slate-500 mr-2 text-[10px]">[LOG]</span><span class="text-cyan-500/90 text-xs">${msg}</span>`;
+            els.consoleOutput.appendChild(p);
+        }
+
+        updateUIText();
+        setTimeout(() => log('System V15.2 Ready. Optimized & Secured.'), 500);
     </script>
 </body>
 
